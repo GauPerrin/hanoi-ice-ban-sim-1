@@ -215,6 +215,65 @@ ev_cost_deterministic = [ev_cost_init * (1 - cost_decline_rate) ** i for i in ra
 ev_cost_prev_global = ev_cost_init  # Reset at the beginning of each simulation
 np.random.seed(seed_value)
 
+# --- Capture all current inputs into a dictionary ---
+tracked_inputs = {
+    # --- Simulation Controls ---
+    "num_simulations": num_simulations,
+    "fleet_growth_rate": fleet_growth_rate,
+    "retirement_age": retirement_age,
+    "adoption_model": adoption_model,
+    "seed_value": seed_value,
+
+    # --- Starting Conditions ---
+    "initial_total_bikes": initial_total_bikes,
+    "initial_ev_share": initial_ev_share,
+    "avg_km_year": avg_km_year,
+    "fuel_per_km_mean": fuel_per_km_mean,
+    "fuel_per_km_std": fuel_per_km_std,
+    "elec_per_km_mean": elec_per_km_mean,
+    "elec_per_km_std": elec_per_km_std,
+    "grid_emission_std_mean": grid_emission_std_mean,
+    "grid_emission_std_std": grid_emission_std_std,
+
+    # --- Cost Trends ---
+    "ev_price_mode": ev_price_mode,
+    "ev_cost_init": ev_cost_init,
+    "salvage_value_pct": salvage_value_pct,
+    "fuel_price_init": fuel_price_init,
+    "fuel_price_trend": fuel_price_trend,
+    "fuel_price_vol": fuel_price_vol,
+    "elec_price_init": elec_price_init,
+    "elec_price_trend": elec_price_trend,
+    "elec_price_vol": elec_price_vol,
+    "cost_decline_rate": cost_decline_rate,
+    "fuel_emission_factor": fuel_emission_factor,
+    "grid_emission_mean": grid_emission_mean,
+    "grid_emission_decline": grid_emission_decline,
+
+    # --- Behavioral Response ---
+    "subsidy_amount": subsidy_amount,
+    "subsidy_end_year": subsidy_end_year,
+    "subsidized_fraction": subsidized_fraction,
+    "k_subsidy": k_subsidy,
+    "k_price": k_price,
+    "price_elasticity_mode": price_elasticity_mode,
+
+    # --- Adoption Curve ---
+    "base_linear_rate": base_linear_rate,
+    "linear_std_dev": linear_std_dev,
+    "k_s_curve": k_s_curve,
+    "s_midpoint": s_midpoint,
+    "policy_boost_2026": policy_boost_2026,
+    "policy_boost_2028": policy_boost_2028,
+
+    # --- Global Shocks ---
+    "import_dependency": import_dependency,
+    "shock_volatility": shock_volatility,
+
+    # --- Display Flag ---
+    "show_metrics": show_metrics,
+}
+
 for sim in range(num_simulations):
     if sim == 0:
         results["fuel_price"] = np.zeros((num_simulations, num_years))
@@ -499,21 +558,25 @@ if "snapshot_history" not in st.session_state:
     st.session_state.snapshot_history = []
 
 # --- Save Current Metrics After Simulation ---
-st.session_state.previous_metrics = st.session_state.current_metrics
+# --- Update session state with tracked inputs and metrics ---
+st.session_state.previous_metrics = st.session_state.get("current_metrics", None)
+st.session_state.previous_inputs = st.session_state.get("current_inputs", None)
+
 st.session_state.current_metrics = metrics
+st.session_state.current_inputs = tracked_inputs
+
+if "snapshot_history" not in st.session_state:
+    st.session_state.snapshot_history = []
 
 st.session_state.snapshot_history.append({
-    "params": {
-        "subsidy_amount": subsidy_amount,
-        "subsidy_end_year": subsidy_end_year,
-        "fleet_growth_rate": fleet_growth_rate,
-        "retirement_age": retirement_age,
-        "adoption_model": adoption_model
-    },
+    "params": tracked_inputs,
     "metrics": metrics
 })
+
+# Keep only the last 5 snapshots
 if len(st.session_state.snapshot_history) > 5:
     st.session_state.snapshot_history.pop(0)
+
 
 # --- Year-by-Year % Change in P50 (Median) from Previous Run (Years as Rows) ---
 st.markdown("## 📈 Year-by-Year % Change from Previous Run (Median Only)")

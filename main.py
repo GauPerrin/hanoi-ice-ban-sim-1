@@ -635,9 +635,9 @@ gov_cost_summary = summarise(results["gov_cost"])
 
 # Assemble metrics for the tabs (excluding EV cost)
 metrics = {
+
     "EV Share (%)": ev_share_summary,
     "EV Enabled Avoided Emissions (tons)": emissions_summary,
-    "CO₂ Cost Avoided (USD)": co2_cost_summary,
     "Health Cost Avoided (USD)": health_cost_summary,
     "People Direct Cost (USD)": people_cost_summary,
     "Government Direct Cost (USD)": gov_cost_summary,
@@ -647,7 +647,6 @@ metrics = {
 tab_descriptions = {
     "EV Share (%)": "This metric shows the fraction of the total motorcycle fleet that is electric each year. It is calculated as the number of EVs divided by the total number of bikes (EVs + ICEs) after accounting for conversions and fleet growth.",
     "EV Enabled Avoided Emissions (tons)": "Estimated tonnes of CO₂ avoided each year as ICE motorcycles are replaced by EVs. Baseline emissions assume the entire fleet remains ICE, while current emissions account for EV adoption and the carbon intensity of the electricity grid.",
-    "CO₂ Cost Avoided (USD)": "The monetary value of avoided emissions each year, computed by multiplying the avoided tonnes of CO₂ by the carbon price (either fixed or following a random walk).", 
     "Health Cost Avoided (USD)": "Estimated healthcare costs avoided due to fewer pollution-related illnesses. It multiplies the health cost per ICE motorcycle by the number of EVs in the fleet each year.",
     "People Direct Cost (USD)": "Cumulative cost to consumers, combining EV purchase costs (net of salvage) and operational savings from using electricity instead of fuel.",
     "Government Direct Cost (USD)": "Cumulative cost to the government in the form of EV purchase subsidies, applied to the fraction of new EV buyers eligible for subsidy (doesn't account for tax loss on fuel though).",
@@ -688,6 +687,18 @@ with st.expander("💸 EV Cost Over Time", expanded=False):
     st.markdown(f"**2035 Mean EV Cost:** {ev_cost_summary['mean'][-1]:,.2f}")
     st.markdown(f"**2035 P10 EV Cost:** {ev_cost_summary['p10'][-1]:,.2f}")
     st.markdown(f"**2035 P90 EV Cost:** {ev_cost_summary['p90'][-1]:,.2f}")
+
+with st.expander("🌍 CO₂ Cost Avoided Over Time",expanded= False):
+    st.plotly_chart(plot_metric("CO₂ Cost Avoided (USD)", co2_cost_summary, years), use_container_width=True)
+    st.markdown(f"**2035 Mean CO₂ Cost Avoided:** ${co2_cost_summary['mean'][-1]:,.0f}")
+    st.markdown(f"**2035 P10 CO₂ Cost Avoided:** ${co2_cost_summary['p10'][-1]:,.0f}")
+    st.markdown(f"**2035 P90 CO₂ Cost Avoided:** ${co2_cost_summary['p90'][-1]:,.0f}")
+    st.markdown(
+        "This shows the **monetized benefit of emissions reduction** as ICE motorcycles are phased out. "
+        "It's calculated by multiplying the avoided CO₂ emissions by the carbon price (either fixed or fluctuating)."
+    )
+
+    
 
 # --- Additional diagnostic plots ---
 # EV price with vs without shock

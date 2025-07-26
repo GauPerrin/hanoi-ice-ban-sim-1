@@ -681,12 +681,12 @@ st.dataframe(
     height=320
 )
 
-# Present the EV cost evolution in its own expander below the year‑over‑year comparison
-with st.expander("💸 EV Cost Over Time", expanded=False):
-    st.plotly_chart(plot_metric("EV Cost (USD)", ev_cost_summary, years), use_container_width=True)
-    st.markdown(f"**2035 Mean EV Cost:** {ev_cost_summary['mean'][-1]:,.2f}")
-    st.markdown(f"**2035 P10 EV Cost:** {ev_cost_summary['p10'][-1]:,.2f}")
-    st.markdown(f"**2035 P90 EV Cost:** {ev_cost_summary['p90'][-1]:,.2f}")
+# # Present the EV cost evolution in its own expander below the year‑over‑year comparison
+# with st.expander("💸 EV Cost Over Time", expanded=False):
+#     st.plotly_chart(plot_metric("EV Cost (USD)", ev_cost_summary, years), use_container_width=True)
+#     st.markdown(f"**2035 Mean EV Cost:** {ev_cost_summary['mean'][-1]:,.2f}")
+#     st.markdown(f"**2035 P10 EV Cost:** {ev_cost_summary['p10'][-1]:,.2f}")
+#     st.markdown(f"**2035 P90 EV Cost:** {ev_cost_summary['p90'][-1]:,.2f}")
 
 with st.expander("🌍 CO₂ Cost Avoided Over Time",expanded= False):
     st.plotly_chart(plot_metric("CO₂ Cost Avoided (USD)", co2_cost_summary, years), use_container_width=True)
@@ -872,7 +872,7 @@ if len(st.session_state.snapshot_history) > 5:
     st.session_state.snapshot_history.pop(0)
 
 # Year-by-Year % Change in P50 from Previous Run
-st.markdown("## 📈 Year-by-Year % Change from Previous Run (Median Only)")
+st.markdown("## 📈 Year-by-Year % Change from Previous Run (Mean Only)")
 if st.session_state.previous_metrics:
     year_labels = [str(y) for y in years]
     yoy_data = []
